@@ -1,12 +1,9 @@
-from dataset import load_dataset
-import os
-import pickle as pkl
 import numpy as np
 from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
 from matplotlib.pyplot import figure
+
 from dataset import num_to_diag
-from preprocessing import *
+
 
 def plt_top_hists(b, Y, diag, num_comp, plot = True):
     ret = []
@@ -78,4 +75,4 @@ def plt_top_hists(b, Y, diag, num_comp, plot = True):
 
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":

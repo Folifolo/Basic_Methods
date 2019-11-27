@@ -1,15 +1,11 @@
-from dataset import load_dataset, num_to_diag, diag
-import os
-import pickle as pkl
 import numpy as np
 from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
 from sklearn.decomposition import PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from utils import *
+
+from dataset import MOST_FREQ_DIAGS_NUMS
 from preprocessing import *
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from utils import *
+
 
 def find_optimal_param(qda, x_train, y_train):
 
@@ -86,7 +82,7 @@ if __name__ == "__main__":
     pca = PCA(n_components=X.shape[0])
     b = pca.fit_transform(X)
     from qda_main import Qda
-    for d in diag:
+    for d in MOST_FREQ_DIAGS_NUMS:
         test_tp = 0
         test_fp = 0
         test_fn = 0

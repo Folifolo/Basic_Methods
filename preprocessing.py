@@ -1,11 +1,9 @@
-from dataset import load_dataset
-import os
 import pickle as pkl
+
 import numpy as np
-from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
-from biosppy.signals import ecg
+from scipy.signal import medfilt
+
+from dataset import load_dataset
 
 
 def find_peaks(x):
@@ -193,7 +191,7 @@ def generate_normal_dataset(path = 'data/6002_norm.pkl'):
     for i in range(X.shape[0]):
         x_i = X[i,:,:]
 
-        peaks = ecg.ecg(signal=x_i[:, 0], sampling_rate=250., show=False)[2]
+        peaks = find_peaks_div(x_i[:, 0])
 
         #if len(peaks) < 2:
         #    continue

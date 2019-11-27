@@ -1,14 +1,11 @@
-from dataset import load_dataset, num_to_diag, diag
-import os
-import pickle as pkl
 import numpy as np
-from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from utils import *
+
 from preprocessing import *
+from utils import *
+
+
 def find_optimal_param(lda, x_train, y_train):
 
     probs_train = lda.predict_proba(x_train)[:, 1]
@@ -153,21 +150,42 @@ class Branch(object):
 
 
 if __name__ == "__main__":
+    diags_norm_rythm = [0]
+    diags_fibrilation = [15]
+    diags_flutter = [16, 17, 18]
+    diags_hypertrophy = [119, 120]
+    diags_extrasystole = [69, 70, 71, 72, 73, 74, 75, 86]
+
+    dgs = [diags_norm_rythm, diags_fibrilation, diags_flutter, diags_hypertrophy, diags_extrasystole]
     num_components = 100
 
-    pkl1 = "C:\\Users\\donte_000\\Downloads\\Telegram Desktop\\xy_6002.pkl"
-    pkl2 = "C:\\Users\\donte_000\\Downloads\\Telegram Desktop\\xy_102.pkl"
+    pkl1 = "C:\\Users\\donte_000\\PycharmProjects\\ClassificationECG\\data\\6002_norm.pkl"
 
-    infile = open(pkl1, 'rb')
+    infile = open("C:\\data\\data_2033.pkl", 'rb')
     xy = pkl.load(infile)
     infile.close()
-
-    X = xy["x"]
     Y = xy["y"]
+
+    outfile = open(pkl1, 'rb')#
+    X = pkl.load(outfile)
+    outfile.close()
     pca = PCA(n_components=X.shape[0])
     b = pca.fit_transform(X)
 
-    for d in np.arange(2,15):
+    Y_new = np.zeros((Y.shape[0], len(dgs)))
+    for i in range(Y.shape[0]):
+        for j in range(len(dgs)):
+            for k in dgs[j]:
+                if Y[i, k] == 1:
+                    Y_new[i, j] = 1
+
+    Y = Y_new
+
+    #Y = xy["y"]
+    pca = PCA(n_components=X.shape[0])
+    b = pca.fit_transform(X)
+
+    for d in range(len(dgs)):
         test_tp = 0
         test_fp = 0
         test_fn = 0

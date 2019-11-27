@@ -1,17 +1,9 @@
-from dataset import num_to_diag, diag
-import os
-import pickle as pkl
-import numpy as np
-from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from utils import *
-from preprocessing import *
+
 from lda_tree_tests import find_optimal_param
-
-
+from preprocessing import *
+from utils import *
 
 num_components = 100
 pkl1 = "C:\\Users\\donte_000\\Downloads\\Telegram Desktop\\xy_6002.pkl"

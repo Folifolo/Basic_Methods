@@ -1,14 +1,10 @@
-from dataset import load_dataset, num_to_diag, diag
-import os
-import pickle as pkl
 import numpy as np
-from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
-from utils import *
+
 from preprocessing import *
+from utils import *
+
 
 def tmp(b,y):
     tp = 0
@@ -44,7 +40,10 @@ if __name__ == "__main__":
     Y = xy["y"]
     pca = PCA(n_components=X.shape[0])
     b = pca.fit_transform(X)
-
+    counter = 0
+    for i in range(len(Y)):
+        counter+=Y[i,14]
+    print(counter)
     for d in np.arange(0,15):
         test_tp = 0
         test_fp = 0

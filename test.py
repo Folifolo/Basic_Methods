@@ -1,14 +1,10 @@
-from dataset import load_dataset, num_to_diag, diag
-import os
-import pickle as pkl
 import numpy as np
-from matplotlib import pyplot as plt
-from  scipy.signal import medfilt
-from matplotlib.pyplot import figure
-from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from utils import *
+
 from preprocessing import *
+from utils import *
+
+
 def find_optimal_param(lda, x_train, y_train):
 
     probs_train = lda.predict_proba(x_train)[:, 1]
