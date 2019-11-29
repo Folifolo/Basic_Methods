@@ -3,7 +3,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from preprocessing import *
 from utils import *
-
+from sklearn.metrics import confusion_matrix
 
 
 def find_optimal_param(lda, x_train, y_train):
@@ -27,23 +27,13 @@ def find_optimal_param(lda, x_train, y_train):
     return probs_train[mx]
 
 
-def predict(lda, x, y, m):
-    tp = 0
-    fp = 0
-    tn = 0
-    fn = 0
+def predict(lda, x, m):
     if len(x) != 0:
         probs = lda.predict_proba(x)[:, 1]
 
         pr_true = (probs > m)
-        y_true = (y == 1)
 
-        tp = np.sum(np.logical_and(pr_true, y_true))
-        fp = np.sum(np.logical_and(pr_true, np.logical_not(y_true)))
-        fn = np.sum(np.logical_and(np.logical_not(pr_true), y_true))
-        tn = np.sum(np.logical_and(np.logical_not(pr_true), np.logical_not(y_true)))
-
-    return tp, fp, fn, tn
+    return pr_true
 
 
 if __name__ == "__main__":
@@ -79,13 +69,18 @@ if __name__ == "__main__":
             lda.fit(b[train_index, :num_components], Y[train_index, d])
             m = find_optimal_param(lda, b[train_index, :num_components], Y[train_index, d])
 
-            tp, fp, fn, tn = predict(lda, b[test_index, :num_components], Y[test_index, d], m)
+            y_prediction = predict(lda, b[test_index, :num_components], m)
+            y_labels = Y[test_index, d]
+            tn, fp, fn, tp = confusion_matrix(y_labels, y_prediction).ravel()
             test_tp += tp
             test_fp += fp
             test_fn += fn
             test_tn += tn
 
-            tp, fp, fn, tn = predict(lda, b[train_index, :num_components], Y[train_index, d], m)
+
+            y_prediction = predict(lda, b[train_index, :num_components], m)
+            y_labels = Y[train_index, d]
+            tn, fp, fn, tp = confusion_matrix(y_labels, y_prediction).ravel()
             train_tp += tp
             train_fp += fp
             train_fn += fn

@@ -5,6 +5,7 @@ import pickle as pkl
 from sklearn.model_selection import train_test_split
 import BaselineWanderRemoval as bwr
 import numpy as np
+import sys
 
 # Порядок отведений
 LEADS_NAMES = ['i', 'ii', 'iii', 'avr', 'avl', 'avf', 'v1', 'v2', 'v3', 'v4', 'v5', 'v6']
@@ -35,6 +36,21 @@ MOST_FREQ_DIAGS_NUMS = [179,
                         66,
                         157,
                         85]
+MOST_FREQ_DIAGS_NUMS_NEW = [161,
+                            158,
+                            2,
+                            156,
+                            15,
+                            44,
+                            45,
+                            157,
+                            159,
+                            60,
+                            47,
+                            46,
+                            119,
+                            123,
+                            0]
 MOST_FREQ_DIAGS_NAMES = ['non_specific_repolarisation_abnormalities_apical',
                          'non_specific_repolarisation_abnormalities_septal',
                          'sinus_bradycardia',
@@ -58,6 +74,27 @@ diags_hypertrophy = [119, 120]
 diags_extrasystole = [69, 70, 71, 72, 73, 74, 75, 86]
 
 NEW_DIAGNOSIS = [diags_norm_rythm, diags_fibrilation, diags_flutter, diags_hypertrophy, diags_extrasystole]
+
+def get_diag_dict():
+    def deep(data, diag_list):
+        for diag in data:
+            if diag['type'] == 'diagnosis':
+                diag_list.append(diag['name'])
+            else:
+                deep(diag['value'], diag_list)
+
+    infile = open('c:\\data\\diagnosis.json', 'rb')
+    data = json.load(infile)
+
+    diag_list = []
+    deep(data, diag_list)
+
+    diag_num = list(range(len(diag_list)))
+    diag_dict = dict(zip(diag_list, diag_num))
+
+    return diag_dict
+
+
 def load_raw_dataset(raw_dataset):
     with open(raw_dataset, 'r') as f:
         data = json.load(f)
@@ -252,6 +289,9 @@ def num_to_diag(num):
 
 
 if __name__ == "__main__":
-    xy = load_dataset()
-    Y = xy['y']
-    print(str(get_number_of_diagnosis("atrial_fibrillation")))
+    #xy = load_dataset()
+    #Y = xy['y']
+    qwe = get_diag_dict()
+    for diag in MOST_FREQ_DIAGS_NAMES:
+        print(str(qwe[diag])+',')
+    #print(str(get_number_of_diagnosis("atrial_fibrillation")))

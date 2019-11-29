@@ -2,6 +2,7 @@ from keras.layers import *
 from keras.models import Model, load_model
 from keras.optimizers import SGD
 from sklearn.metrics import confusion_matrix
+from sklearn.utils import class_weight
 
 from dataset import load_split, DATA_SIZE
 
@@ -26,10 +27,13 @@ def fit_save(model, x, y, batch_size, validation_data, epochs, repeat=15, name="
     counter = 0
     max_se = 0
     max_sp = 0
+    class_weight = {0: y[:,0].sum(),
+                    1: y[:,1].sum()
+                    }
     for epoch in np.arange(0, epochs):
         counter += 1
         model.fit(x, y, batch_size=batch_size, epochs=1,
-                  validation_data=validation_data, verbose=0)
+                  validation_data=validation_data, verbose=0, class_weight=class_weight)
 
         y_prediction = np.argmax(model.predict(validation_data[0]), axis=1)
         y_labels = np.argmax(validation_data[1], axis=1)
@@ -76,7 +80,7 @@ def evaluate_model(model, diagnoses, epochs, batch_size, rnd=42, name='model'):
 if __name__ == "__main__":
     model = build_model1(DATA_SIZE)
     sgd_opt = SGD(0.001)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd_opt)
+    model.compile(loss='categorical_crossentropy', optimizer=sgd_opt, metrics=['accuracy'])
     model.summary()
 
     evaluate_model(model, diags_fibrilation, 1000, 64)

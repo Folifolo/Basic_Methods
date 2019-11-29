@@ -4,7 +4,7 @@ import numpy as np
 from scipy.signal import medfilt
 
 from dataset import load_dataset
-
+import matplotlib.pyplot as plt
 
 def find_peaks(x):
     peaks = []
@@ -130,8 +130,9 @@ def cut_ecg_cycles(x, peaks):
     cutted_ecg = []
     cycle = []
     for peak_num in range(len(peaks)-1):
-        cycle.append(peaks[peak_num+1]-peaks[peak_num])
-        cutted_ecg.append(x[peaks[peak_num]:peaks[peak_num+1]])
+        if peaks[peak_num+1]-peaks[peak_num] > 2:
+            cycle.append(peaks[peak_num+1]-peaks[peak_num])
+            cutted_ecg.append(x[peaks[peak_num]:peaks[peak_num+1]])
     return cutted_ecg, cycle
 
 def scale_ecg_zeros(cutted_ecg):
@@ -182,29 +183,38 @@ def make_mean_var(cutted_ecg):
 
 
 
-def generate_normal_dataset(path = 'data/6002_norm.pkl'):
-    xy = load_dataset()
-    X = xy["x"]
-    Y = xy["y"]
+def generate_normal_dataset(path = 'data/6002_old_Dif.pkl'):
+
+    infile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\data\\data_old_and_new.pkl', 'rb')
+    (old, new) = pkl.load(infile)
+    infile.close()
+
+    X = old["x"]
+
+    infile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\df_peaks_old_wo_noise.pkl', 'rb')
+    allpeaks = pkl.load(infile)
+    infile.close()
 
     new_X = np.zeros((X.shape[0], 6002))
     for i in range(X.shape[0]):
         x_i = X[i,:,:]
-
         peaks = find_peaks_div(x_i[:, 0])
-
+        if len(peaks) <= 1:
+            print(i)
+            continue
         #if len(peaks) < 2:
         #    continue
         peaks.sort()
 
-        cytted_ecg, cycle = cut_ecg_cycles(x_i, peaks)
-        cytted_ecg = scale_ecg_reshape(cytted_ecg)
+        cutted_ecg, cycle = cut_ecg_cycles(x_i, peaks)
+        cutted_ecg = scale_ecg_reshape(cutted_ecg)
 
         rithm = np.array(cycle)
         rithm_m = rithm.mean()
         rithm_v = rithm.std()
         rithm = np.array([rithm_m, rithm_v])
-        m, v = make_mean_var(cytted_ecg)
+
+        m, v = make_mean_var(cutted_ecg)
         v = np.sqrt(v)
 
         new_X[i,:] = np.concatenate((np.concatenate((m, v), axis = 1).flatten('F'), rithm))
@@ -218,7 +228,7 @@ def generate_normal_dataset(path = 'data/6002_norm.pkl'):
     for i in range(X.shape[0]):
         x_std[i] = (new_X[i] - mn)/st
     output = open(path, 'wb')
-    pkl.dump(new_X, output)
+    pkl.dump(x_std, output)
 
 
 if __name__ == "__main__":
