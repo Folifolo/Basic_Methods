@@ -2,33 +2,26 @@ from sklearn.decomposition import PCA
 
 from preprocessing import *
 from utils import *
-from abc import ABC
+from abc import ABC, abstractmethod
+from methodutils import FdaUtils, LdaUtils
 
 
 class TreeNode(ABC):
+
 
     def __init__(self):
         """Constructor"""
         self.method
         self.left_child = None
         self.right_child = None
-        self.m
 
     def is_have_childs(self):
         return self.left_child is not None and self.right_child is not None
 
     def grow(self):
         """Set left and right"""
-        # self.right = FDA_node()
-        # self.left = FDA_node()
-
-    def find_optimal_param(self, x, y):
-        self.m = self.method.find_optimal_param(x, y)
-
-        if self.is_have_childs():
-            left, right = self.divide_data(x)
-            self.left_child.find_optimal_param(x[left], y[left])
-            self.right_child.find_optimal_param(x[right], y[right])
+        # self.right_child = TreeNode()
+        # self.left_child = TreeNode()
 
     def fit(self, x, y):
         self.method.fit(x, y)
@@ -43,13 +36,13 @@ class TreeNode(ABC):
 
     def divide_data(self, x):
         probs = self.method.predict_proba(x)[:, 1]
-        left = (probs <= self.m)
-        right = (probs > self.m)
+        left = (probs <= self.method.m)
+        right = (probs > self.method.m)
         return left, right
 
     def predict(self, x):
         if not self.is_have_childs():
-            pred = self.method.predict(x, self.m)
+            pred = self.method.predict(x)
 
         elif self.is_have_childs():
             left, right = self.divide_data(x)
@@ -60,6 +53,30 @@ class TreeNode(ABC):
             pred[right] = r_pred
 
         return pred
+
+
+class FdaTree(TreeNode):
+    def __init__(self):
+        """Constructor"""
+        self.method = FdaUtils()
+        self.left_child = None
+        self.right_child = None
+
+    def grow(self):
+        self.right_child = FdaTree()
+        self.left_child = FdaTree()
+
+
+class LdaTree(TreeNode):
+    def __init__(self):
+        """Constructor"""
+        self.method = LdaUtils()
+        self.left_child = None
+        self.right_child = None
+
+    def grow(self):
+        self.right_child = LdaTree()
+        self.left_child = LdaTree()
 
 
 if __name__ == "__main__":
@@ -75,7 +92,7 @@ if __name__ == "__main__":
     infile.close()
 
     Y = old["y"]
-    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\\ClassificationECG\\data\\6002_old_Dif.pkl', 'rb')
+    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\data\\6002_old_Dif.pkl', 'rb')
     X = pkl.load(outfile)
     outfile.close()
     pca = PCA(n_components=X.shape[0])
@@ -84,11 +101,10 @@ if __name__ == "__main__":
     for d in reversed(MOST_FREQ_DIAGS_NUMS_NEW):
         y_prediction = []
         y_labels = []
-        for train_index, test_index in cross_val(b.shape[0], 1):
-            tree = FDA_node()
+        for train_index, test_index in cross_val(b.shape[0], 500):
+            tree = FdaTree()
             tree.grow()
             tree.fit(b[train_index, :num_components], Y[train_index, d])
-            tree.find_optimal_param(b[train_index, :num_components], Y[train_index, d])
 
             y_prediction.append(tree.predict(b[test_index, :num_components]))
             y_labels.append(Y[test_index, d])

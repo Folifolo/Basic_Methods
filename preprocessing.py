@@ -191,13 +191,13 @@ def generate_normal_dataset(path = 'data/6002_old_Dif.pkl'):
 
     X = old["x"]
 
-    infile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\df_peaks_old_wo_noise.pkl', 'rb')
-    allpeaks = pkl.load(infile)
-    infile.close()
+    #infile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\df_peaks_old_wo_noise.pkl', 'rb')
+    #allpeaks = pkl.load(infile)
+    #infile.close()
 
     new_X = np.zeros((X.shape[0], 6002))
     for i in range(X.shape[0]):
-        x_i = X[i,:,:]
+        x_i = X[i+93,:,:]
         peaks = find_peaks_div(x_i[:, 0])
         if len(peaks) <= 1:
             print(i)
@@ -207,15 +207,27 @@ def generate_normal_dataset(path = 'data/6002_old_Dif.pkl'):
         peaks.sort()
 
         cutted_ecg, cycle = cut_ecg_cycles(x_i, peaks)
+
         cutted_ecg = scale_ecg_reshape(cutted_ecg)
+
+
 
         rithm = np.array(cycle)
         rithm_m = rithm.mean()
         rithm_v = rithm.std()
         rithm = np.array([rithm_m, rithm_v])
 
+        print(rithm_m/250, rithm_v/250)
+        plt.plot(np.arange(len(cycle)), np.array(cycle)/250, color = 'k', alpha = 1)
+
+        plt.ylabel("Длина RR-интервала, c")
+        plt.xlabel("Номер RR-интервала")
+        plt.show()
+
         m, v = make_mean_var(cutted_ecg)
         v = np.sqrt(v)
+
+
 
         new_X[i,:] = np.concatenate((np.concatenate((m, v), axis = 1).flatten('F'), rithm))
 

@@ -121,7 +121,7 @@ if __name__ == "__main__":
     infile.close()
 
     Y = old["y"]
-    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\\ClassificationECG\\data\\6002_old_Dif.pkl', 'rb')
+    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\data\\6002_old_Dif.pkl', 'rb')
     X = pkl.load(outfile)
     outfile.close()
     pca = PCA(n_components=X.shape[0])
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     for d in reversed(MOST_FREQ_DIAGS_NUMS_NEW):
         y_prediction =[]
         y_labels = []
-        for train_index, test_index in cross_val(b.shape[0], 1):
+        for train_index, test_index in cross_val(b.shape[0], 500):
             tree = FDA_node()
             tree.grow()
             tree.fit(b[train_index, :num_components],Y[train_index,d])

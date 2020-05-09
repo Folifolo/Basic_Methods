@@ -37,19 +37,16 @@ def predict(fda, x, m):
 
 
 if __name__ == "__main__":
-    from dataset import load_dataset, load_new_dataset_6002, diagnosis_to_binary, MOST_FREQ_DIAGS_NUMS_NEW
+    from dataset import load_dataset, load_new_dataset_6002, diagnosis_to_binary, MOST_FREQ_DIAGS_NUMS
     from fisher_discriminant import FisherDiscriminantAnalisys
     num_components = 100
 
-    infile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\data\\data_old_and_new_without_noise.pkl', 'rb')
-    (old, new) = pkl.load(infile)
-    infile.close()
+    xy = load_dataset()
 
-    Y = old["y"]
-    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\Basic_Methods\\data\\6002_old_Dif.pkl', 'rb')
+    Y = xy["y"]
+    outfile = open('C:\\Users\\donte_000\\PycharmProjects\\ClassificationECG\\data\\6002_norm_old_old.pkl', 'rb')
     X = pkl.load(outfile)
     outfile.close()
-    '''
     mn = X.mean(axis = 0)
     st = X.std(axis = 0)
     x_std = np.zeros(X.shape)
@@ -60,7 +57,6 @@ if __name__ == "__main__":
         x_std[i] = (X[i] - mn)/st
 
     X = x_std
-    '''
     pca = PCA(n_components=X.shape[0])
     b = pca.fit_transform(X)
     '''
@@ -97,7 +93,7 @@ if __name__ == "__main__":
     plt.show()
 '''
 
-    for d in reversed(MOST_FREQ_DIAGS_NUMS_NEW):
+    for d in reversed(MOST_FREQ_DIAGS_NUMS):
         y_prediction =[]
         y_labels = []
         for train_index, test_index in cross_val(b.shape[0], 1):

@@ -289,9 +289,15 @@ def num_to_diag(num):
 
 
 if __name__ == "__main__":
-    #xy = load_dataset()
-    #Y = xy['y']
+    xy = load_dataset('new')
+    Y = xy['y']
+    counter = 0
+    for i in range(Y.shape[0]):
+        if Y[i,119] == 1:
+            counter += 1;
+
+    print(counter)
     qwe = get_diag_dict()
-    for diag in MOST_FREQ_DIAGS_NAMES:
+    for diag in ["left_atrial_hypertrophy"]:
         print(str(qwe[diag])+',')
     #print(str(get_number_of_diagnosis("atrial_fibrillation")))
